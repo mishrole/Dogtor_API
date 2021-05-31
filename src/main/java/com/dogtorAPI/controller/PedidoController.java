@@ -42,12 +42,11 @@ public class PedidoController {
 		return ResponseEntity.ok(listaPedido);
 	}
 	
-	@PutMapping(path = "/actualizaEstadoPedido/{id}", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Map<String, Object>> actualizaEstadoPedido(@PathVariable("id") Integer id, @RequestBody Map<String, Object> json) {
+	@PutMapping(path = "/actualizaEstadoPedido/{codigo_pedido}", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Map<String, Object>> actualizaEstadoPedido(@PathVariable("codigo_pedido") Integer codigo_pedido, @RequestBody Map<String, Object> json) {
 		Map<String, Object> salida = new HashMap<String, Object>();
 		
-		//Optional<Pedido> option = service.obtienePorId((Integer) json.get("codigo_pedido"));
-		Optional<Pedido> option = service.obtienePorId(id);
+		Optional<Pedido> option = service.obtienePorId(codigo_pedido);
 		
 		if(option.isPresent()) {
 			try {

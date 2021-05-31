@@ -256,8 +256,8 @@ public class UsuarioController {
 		return ResponseEntity.ok(salida);
 	}
 	
-	@DeleteMapping(path = "/eliminaUsuario/{id}")
-	public ResponseEntity<Map<String, Object>> eliminaUsuario (@PathVariable("id") Integer codigo_usuario) {
+	@DeleteMapping(path = "/eliminaUsuario/{codigo_usuario}")
+	public ResponseEntity<Map<String, Object>> eliminaUsuario (@PathVariable("codigo_usuario") Integer codigo_usuario) {
 		Map<String, Object> salida = new HashMap<String, Object>();
 		
 		Optional<Usuario> option = usuarioService.obtieneUsuarioPorId(codigo_usuario);

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +29,13 @@ public class DetalleUsuarioRolController {
 	@Autowired
 	private DetalleUsuarioRolService detalleUsuarioRolService;
 	
-	@PostMapping(path = "/registraDetalleUsuarioRol", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Map<String, Object>> registraDetalleUsuarioRol(@RequestBody Map<String, Object> json) {
+	@PostMapping(path = "/registraDetalleUsuarioRol/{codigo_usuario}", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Map<String, Object>> registraDetalleUsuarioRol(@PathVariable("codigo_usuario") Integer codigo_usuario, @RequestBody Map<String, Object> json) {
 		Map<String, Object> salida = new HashMap<String, Object>();
 		
 		DetalleUsuarioRolPK objRolUsuarioPK = new DetalleUsuarioRolPK();
 		objRolUsuarioPK.setCodigo_rol_usuario((Integer) json.get("codigo_rol_usuario"));
-		objRolUsuarioPK.setCodigo_usuario((Integer) json.get("codigo_usuario"));
+		objRolUsuarioPK.setCodigo_usuario(codigo_usuario);
 		
 		DetalleUsuarioRol objRolUsuario = new DetalleUsuarioRol();
 		objRolUsuario.setObjDetalleUsuarioRolPK(objRolUsuarioPK);

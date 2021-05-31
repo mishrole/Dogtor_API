@@ -70,20 +70,16 @@ public class CitaController {
 		return ResponseEntity.ok(salida);
 	}
 	
-	@PutMapping(path = "/actualizaEstadoCita", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Map<String, Object>> actualizaEstadoCita(@RequestBody Map<String, Object> json) {
+	@PutMapping(path = "/actualizaEstadoCita/{codigo_cita}", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Map<String, Object>> actualizaEstadoCita(@PathVariable("codigo_cita") Integer codigo_cita, @RequestBody Map<String, Object> json) {
 		Map<String, Object> salida = new HashMap<String, Object>();
 		
-		Cita objCita = new Cita();
-		objCita.setCodigo_cita((Integer) json.get("codigo_cita"));
-		objCita.setCodigo_estado_cita((Integer) json.get("codigo_estado_cita"));
-		
-		Optional<Cita> option = service.obtienePorId(objCita.getCodigo_cita());
+		Optional<Cita> option = service.obtienePorId(codigo_cita);
 		
 		if(option.isPresent()) {
 			try {
 				option.ifPresent((Cita result) -> {
-					result.setCodigo_estado_cita(objCita.getCodigo_estado_cita());
+					result.setCodigo_estado_cita((Integer) json.get("codigo_estado_cita"));
 					
 					Cita citaSalida = service.insertaCita(result);
 					

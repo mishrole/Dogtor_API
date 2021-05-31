@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,6 +40,24 @@ public class MascotaController {
 	
 	@Autowired
 	private MascotaService service;
+	
+	@RequestMapping("/listaMascotaPorNombre")
+	@ResponseBody
+	public List<Mascota> listaMascotaPorNombre(String nombre_mascota) {
+		return service.listaMascotaPorNombre(nombre_mascota.trim());
+	}
+	
+	@RequestMapping("/listaMascotaPorPropietario")
+	@ResponseBody
+	public List<Mascota> listaMascotaPorPropietario(Integer codigo_propietario) {
+		return service.listaMascotaPorPropietario(codigo_propietario);
+	}
+	
+	@RequestMapping("/listaMascotaPorPropietarioYNombre")
+	@ResponseBody
+	public List<Mascota> listaMascotaPorPropietarioYNombre(Integer codigo_propietario, String nombre_mascota) {
+		return service.listaMascotaPorPropietarioYNombre(codigo_propietario, nombre_mascota);
+	}
 	
 	@PostMapping("/registraMascotaConFoto")
 	public @ResponseBody Map<String, Object> registraMascotaConFoto(@RequestParam(value = "codigo_propietario") Integer codigoPropietario,
@@ -113,7 +132,7 @@ public class MascotaController {
 		
 	}
 	
-	@PostMapping("/actualizaMascotaConFoto")
+	@PutMapping("/actualizaMascotaConFoto")
 	public @ResponseBody Map<String, Object> actualizaMascotaConFoto(@RequestParam(value = "codigo_mascota") Integer codigoMascota, @RequestParam(value = "codigo_propietario", required = false) Integer codigoPropietario,
 			@RequestParam(value = "nombre_mascota") String nombreMascota, @RequestParam(value = "codigo_especie_mascota") Integer especieMascota,
 			@RequestParam(value = "codigo_raza_mascota") Integer razaMascota, @RequestParam(value = "codigo_color_mascota") Integer colorMascota,
@@ -195,29 +214,6 @@ public class MascotaController {
 		
 		return salida;
 		
-	}
-	
-	@RequestMapping("/verMascota")
-	public String verRegistra() {
-		return "crudMascota";
-	}
-	
-	@RequestMapping("/listaMascotaPorNombre")
-	@ResponseBody
-	public List<Mascota> listaMascotaPorNombre(String nombre_mascota) {
-		return service.listaMascotaPorNombre(nombre_mascota.trim());
-	}
-	
-	@RequestMapping("/listaMascotaPorPropietario")
-	@ResponseBody
-	public List<Mascota> listaMascotaPorPropietario(Integer codigo_propietario) {
-		return service.listaMascotaPorPropietario(codigo_propietario);
-	}
-	
-	@RequestMapping("/listaMascotaPorPropietarioYNombre")
-	@ResponseBody
-	public List<Mascota> listaMascotaPorPropietarioYNombre(Integer codigo_propietario, String nombre_mascota) {
-		return service.listaMascotaPorPropietarioYNombre(codigo_propietario, nombre_mascota);
 	}
 	
 	@RequestMapping("/registraMascota")
