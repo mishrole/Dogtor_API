@@ -3,23 +3,25 @@ package com.dogtorAPI.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dogtorAPI.entity.Especie;
 import com.dogtorAPI.service.EspecieService;
 
-@Controller
+@RestController
+@RequestMapping("/rest/especie")
 public class EspecieController {
 
 	@Autowired
 	private EspecieService service;
 	
-	@RequestMapping("/listaEspecie")
-	@ResponseBody
-	public List<Especie> listaEspecie() {
-		return service.listaEspecie();
+	@GetMapping
+	public ResponseEntity<List<Especie>> lista() {
+		List<Especie> listaEspecie = service.listaEspecie();
+		return ResponseEntity.ok(listaEspecie);
 	}
 
 }

@@ -3,23 +3,25 @@ package com.dogtorAPI.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dogtorAPI.entity.Color;
 import com.dogtorAPI.service.ColorService;
 
-@Controller
+@RestController
+@RequestMapping("/rest/color")
 public class ColorController {
 	
 	@Autowired
 	private ColorService service;
 	
-	@RequestMapping("/listaColor")
-	@ResponseBody
-	public List<Color> listaColor() {
-		return service.listaColor();
+	@GetMapping
+	public ResponseEntity<List<Color>> lista() {
+		List<Color> listaColor = service.listaColor();
+		return ResponseEntity.ok(listaColor);
 	}
 
 }
