@@ -263,10 +263,15 @@ public class UsuarioController {
 		Optional<Usuario> option = usuarioService.obtieneUsuarioPorId(codigo_usuario);
 		
 		if(option.isPresent()) {
+			
 			try {
 				List<Rol> roles = usuarioService.obtenerRolesDeUsuario(codigo_usuario);
 				DetalleUsuarioRolPK objRolUsuarioPK = new DetalleUsuarioRolPK();
-				objRolUsuarioPK.setCodigo_rol_usuario(roles.get(0).getCodigo_rol_usuario());
+				
+				if(roles.size() > 0) {
+					objRolUsuarioPK.setCodigo_rol_usuario(roles.get(0).getCodigo_rol_usuario());
+				}
+				
 				objRolUsuarioPK.setCodigo_usuario(codigo_usuario);
 				
 				DetalleUsuarioRol objRolUsuario = new DetalleUsuarioRol();

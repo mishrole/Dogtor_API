@@ -1,11 +1,16 @@
 package com.dogtorAPI.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dogtorAPI.entity.DetalleUsuarioRol;
 import com.dogtorAPI.entity.DetalleUsuarioRolPK;
@@ -13,7 +18,8 @@ import com.dogtorAPI.entity.Rol;
 import com.dogtorAPI.service.DetalleUsuarioRolService;
 import com.dogtorAPI.service.RolService;
 
-@Controller
+@RestController
+@RequestMapping("/rest/DetalleUsuarioRol")
 public class DetalleUsuarioRolController {
 	
 	@Autowired
@@ -22,18 +28,27 @@ public class DetalleUsuarioRolController {
 	@Autowired
 	private DetalleUsuarioRolService detalleUsuarioRolService;
 	
-	@RequestMapping("/registraDetalleUsuarioRol")
-	@ResponseBody
-	public List<Rol> registraDetalleUsuarioRol(Integer codigo_rol_usuario, Integer codigo_usuario) {
+	@PostMapping(path = "/registraDetalleUsuarioRol", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Map<String, Object>> registraDetalleUsuarioRol(@RequestBody Map<String, Object> json) {
+		Map<String, Object> salida = new HashMap<String, Object>();
+		
 		DetalleUsuarioRolPK objRolUsuarioPK = new DetalleUsuarioRolPK();
-		objRolUsuarioPK.setCodigo_rol_usuario(codigo_rol_usuario);
-		objRolUsuarioPK.setCodigo_usuario(codigo_usuario);
+		objRolUsuarioPK.setCodigo_rol_usuario((Integer) json.get("codigo_rol_usuario"));
+		objRolUsuarioPK.setCodigo_usuario((Integer) json.get("codigo_usuario"));
 		
 		DetalleUsuarioRol objRolUsuario = new DetalleUsuarioRol();
 		objRolUsuario.setObjDetalleUsuarioRolPK(objRolUsuarioPK);
 		
-		detalleUsuarioRolService.insertaUsuarioRol(objRolUsuario);
-		return rolService.listaRolPorUsuario(codigo_usuario);
+		DetalleUsuarioRol objDetalleSalida = detalleUsuarioRolService.insertaUsuarioRol(objRolUsuario);
+		
+		if(objDetalleSalida != null) {
+			salida.put("lista", rolService.listaRolPorUsuario(objRolUsuarioPK.getCodigo_usuario()));
+		} else {
+			salida.put("MENSAJE", "El registro no pudo ser completado");
+		}
+		
+		return ResponseEntity.ok(salida);
+		
 	}
 	
 	@RequestMapping("/eliminaDetalleUsuarioRol")

@@ -7,40 +7,45 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dogtorAPI.entity.Cita;
 import com.dogtorAPI.service.CitaService;
 
-@Controller
+@RestController
+@RequestMapping("/rest/cita")
 public class CitaController {
 	
 	@Autowired
 	private CitaService service;
 	
-	@RequestMapping("/listaCitaPorCodigo")
-	@ResponseBody
-	public List<Cita> listaCitaPorCodigo(Integer codigo_cita) {
-		return service.listaCitaPorCodigo(codigo_cita);
+	@GetMapping
+	public ResponseEntity<List<Cita>> lista() {
+		List<Cita> listaCita = service.listaCita();
+		return ResponseEntity.ok(listaCita);
 	}
 	
-	@RequestMapping("/listaCita")
-	@ResponseBody
-	public List<Cita> listaCita() {
-		return service.listaCita();
+	@GetMapping(path = "/listaCitaPorCodigo/{codigo_cita}")
+	public ResponseEntity<List<Cita>> listaCitaPorCodigo(@PathVariable("codigo_cita") Integer codigo_cita) {
+		List<Cita> listaCita = service.listaCitaPorCodigo(codigo_cita);
+		return ResponseEntity.ok(listaCita);
 	}
 	
-	@RequestMapping("/listaCitaPorUsuario")
-	@ResponseBody
-	public List<Cita> listaCitaPorUsuario(Integer codigo_usuario) {
-		return service.listaCitaPorUsuario(codigo_usuario);
+	@GetMapping(path = "/listaCitaPorUsuario/{codigo_usuario}")
+	public ResponseEntity<List<Cita>> listaCitaPorUsuario(@PathVariable("codigo_usuario") Integer codigo_usuario) {
+		List<Cita> listaCita = service.listaCitaPorUsuario(codigo_usuario);
+		return ResponseEntity.ok(listaCita);
 	}
 	
-	@RequestMapping("/registraCita")
-	@ResponseBody
-	public Map<String, Object> registra(Cita objCita) {
+	@PostMapping(path = "/registraCita", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Map<String, Object>> registraCita(@RequestBody Cita objCita) {
 		Map<String, Object> salida = new HashMap<String, Object>();
 		
 		objCita.setFecha_solicitud_cita(new Date());
@@ -62,39 +67,45 @@ public class CitaController {
 			salida.put("lista", lista);
 		}
 		
-		return salida;
+		return ResponseEntity.ok(salida);
 	}
 	
-	@RequestMapping("/actualizaEstadoCita")
-	@ResponseBody
-	public Map<String, Object> actualizaEstadoCita(Integer codigo_cita, Integer codigo_estado_cita) {
+	@PutMapping(path = "/actualizaEstadoCita", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Map<String, Object>> actualizaEstadoCita(@RequestBody Map<String, Object> json) {
 		Map<String, Object> salida = new HashMap<String, Object>();
 		
-		Optional<Cita> option = service.obtienePorId(codigo_cita);
+		Cita objCita = new Cita();
+		objCita.setCodigo_cita((Integer) json.get("codigo_cita"));
+		objCita.setCodigo_estado_cita((Integer) json.get("codigo_estado_cita"));
 		
-		try {
-			if(option.isPresent()) {
+		Optional<Cita> option = service.obtienePorId(objCita.getCodigo_cita());
+		
+		if(option.isPresent()) {
+			try {
 				option.ifPresent((Cita result) -> {
-					result.setCodigo_estado_cita(codigo_estado_cita);
+					result.setCodigo_estado_cita(objCita.getCodigo_estado_cita());
 					
 					Cita citaSalida = service.insertaCita(result);
 					
 					if(citaSalida != null) {
-						salida.put("MENSAJE", "El estado de la cita ha sido modificado");
+						salida.put("MENSAJE", "La cita ha sido modificado");
+					} else {
+						salida.put("MENSAJE", "La cita no pudo ser actualizada");
 					}
 				});
-			} else {
-				salida.put("MENSAJE", "Error, la cita no existe");
+			} catch (Exception e) {
+				e.printStackTrace();
+				salida.put("MENSAJE", "Error, la cita no pudo ser actualizada");
+			} finally {
+				List<Cita> lista = service.listaCita();
+				salida.put("lista", lista);
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			salida.put("MENSAJE", "Error, la cita no pudo ser actualizada");
-		} finally {
-			List<Cita> lista = service.listaCita();
-			salida.put("lista", lista);
+		} else {
+			salida.put("MENSAJE", "Error, la cita no existe");
 		}
 		
-		return salida;
+		return ResponseEntity.ok(salida);
+		
 	}
+
 }
